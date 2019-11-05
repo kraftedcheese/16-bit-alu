@@ -1,0 +1,62 @@
+// 16-bit arithmetic logic unit
+
+module alu_16_bit (
+    input alufn[6],
+    input a[16],
+    input b[16],
+    output o[16],
+    output z,
+    output v,
+    output n
+  ) {
+    
+  sig s[16];
+    
+  always {
+    case (alufn) {
+      // FUNCTIONS SPECIFIED IN LAB 3 PAGE 10
+      6b000000: s = a + b;                  // ADD
+      6b000001: s = a - b;                  // SUB
+      6b011000: s = a & b;                  // AND
+      6b011110: s = a | b;                  // OR
+      6b010110: s = a ^ b;                  // XOR
+      6b011010: s = a;                      // "A"
+      6b100000: s = a << b[5:0];            // SHL
+      6b100001: s = a >> b[5:0];            // SHR
+      6b100011: s = $signed(a) >>> b[5:0];  // SRA
+      6b110011: s = a == b;                 // CMPEQ
+      6b110101: s = a < b;                  // CMPLT
+      6b110111: s = a <= b;                 // CMPLE
+      
+      // ADDITIONAL FUNCTIONS:
+      6b000010: s = (a * b);                // MUL      
+      6b010001: s = ~(a & b);               // NAND
+      6b011111: s = ~(a | b);               // NOR
+      6b010111: s = ~(a ^ b);               // XNOR
+      
+      // MODULO
+      6b000111: 
+        if (b != 0) // avoid dividing by zero
+          s = a - ((a/b) * b); 
+        else
+          s = a; 
+     
+      default:  s = 0;
+      }
+    
+    // z, v, n outputs can only be non-zero when carrying out arithmetic operations (ADD, SUB, MUL)
+    if (alufn[5:4] == 2b00) {
+      z = s == 0;
+      v = ( a[15] & (b[15] ^ alufn[0]) & ~s[15] ) | ( ~a[15] & ~(b[15] ^ alufn[0]) & s[15] );
+      n = s[15] == 0;
+      }
+    else {
+      z = 0;
+      v = 0;
+      n = 0;
+      }
+    
+    o = s;
+    
+  }
+}

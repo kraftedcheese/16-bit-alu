@@ -1,0 +1,81 @@
+// mojo_top has two states: AUTO and MANUAL
+// mojo_top toggles between the states on pressing io_button[2] , the bottom io button
+
+module mojo_top (
+    input clk,              // 50MHz clock
+    input rst_n,            // reset button (active low)
+    output led [8],         // 8 user controllable LEDs
+    input cclk,             // configuration clock, AVR ready when high
+    output spi_miso,        // AVR SPI MISO
+    input spi_ss,           // AVR SPI Slave Select
+    input spi_mosi,         // AVR SPI MOSI
+    input spi_sck,          // AVR SPI Clock
+    output spi_channel [4], // AVR general purpose pins (used by default to select ADC channel)
+    input avr_tx,           // AVR TX (FPGA RX)
+    output avr_rx,          // AVR RX (FPGA TX)
+    input avr_rx_busy,      // AVR RX buffer full
+    output io_led [3][8],   // LEDs on IO Shield
+    output io_seg [8],      // 7-segment LEDs on IO Shield
+    output io_sel [4],      // Digit select on IO Shield
+    input io_button [5],    // 5 buttons on IO Shield - 0:top 1:center 2:bottom 3:left 4:right
+    input io_dip [3][8]     // DIP switches on IO Shield
+  ) {
+  
+  sig rst;                  // reset signal
+  sig state_change;         // to change between manual and auto testing
+  sig start_auto_test;      // to start auto testing
+  
+    .clk(clk) {
+    // The reset conditioner is used to synchronize the reset signal to the FPGA
+    // clock. This ensures the entire FPGA comes out of reset at the same time.
+    reset_conditioner reset_cond;
+    button_conditioner button_cond;
+    edge_detector edge (#RISE(1), #FALL(0));
+      
+    .rst(rst) {
+      fsm state = {MANUAL, AUTO};
+      alu_tester_auto alu_tester_auto (.start(start_auto_test));
+      alu_tester alu_tester (.io_dip(io_dip), .state_change_btn(io_button[1]) );
+      }
+}
+  
+  always {
+    reset_cond.in = ~rst_n;   // input raw inverted reset signal
+    rst = reset_cond.out;     // conditioned reset_cond
+    
+    button_cond.in = io_button[2];
+    edge.in = button_cond.out;
+    state_change = edge.out;  
+    
+    start_auto_test = 0;
+     
+     
+    // We set the initial state of the led, seven_seg and selector here
+    io_led = {8b0,8b0,8b0};  
+    io_seg = alu_tester.io_seg;
+    io_sel = alu_tester.io_sel;
+      
+    case(state.q){
+        state.MANUAL:        
+          io_led = alu_tester.io_led;
+          if(state_change){
+            state.d = state.AUTO;
+          }
+          
+        state.AUTO:
+          io_seg = alu_tester_auto.io_seg;
+          io_sel = alu_tester_auto.io_sel;
+          io_led[2][5:0] = alu_tester_auto.opcode_led; 
+          start_auto_test = 1;
+          if(state_change){
+            state.d = state.MANUAL;
+          }
+    
+      }
+      
+    led = bzzzzzzzz;
+    spi_miso = bz;
+    spi_channel = bzzzz;
+    avr_rx = bz;
+  }    
+}
