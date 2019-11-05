@@ -1,0 +1,22 @@
+module alu_boolean (
+    input alufn[4],
+    input a[16],
+    input b[16],
+    output s[16]
+  ) {
+
+  always {
+    case(alufn){
+      4b1000: s = a & b;                  // AND
+      4b1110: s = a | b;                  // OR
+      4b0110: s = a ^ b;                  // XOR
+      4b1010: s = a;                      // "A"
+      
+      // ADDITIONAL FUNCTIONS:
+      4b0001: s = ~(a & b);               // NAND
+      4b1111: s = ~(a | b);               // NOR
+      4b0111: s = ~(a ^ b);               // XNOR
+      default: s = 0;
+      }
+  }
+}

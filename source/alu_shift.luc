@@ -1,0 +1,16 @@
+module alu_shift (
+    input alufn[4],
+    input a[16],
+    input b[16],
+    output s[16]
+  ) {
+
+  always {
+    case(alufn){
+      4b0011: s = a == b;                 // CMPEQ
+      4b0101: s = a < b;                  // CMPLT
+      4b0111: s = a <= b;                 // CMPLE
+      default: s = 0;
+      }
+  }
+}

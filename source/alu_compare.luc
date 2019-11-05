@@ -1,0 +1,16 @@
+module alu_compare (
+    input alufn[4],
+    input a[16],
+    input b[16],
+    output s[16]
+  ) {
+
+  always {
+    case(alufn){
+      6b100000: s = a << b[5:0];            // SHL
+      6b100001: s = a >> b[5:0];            // SHR
+      6b100011: s = $signed(a) >>> b[5:0];  // SRA
+      default: s = 0;
+      }
+  }
+}

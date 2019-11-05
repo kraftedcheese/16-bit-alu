@@ -1,5 +1,4 @@
 // 16-bit arithmetic logic unit
-
 module alu_16_bit (
     input alufn[6],
     input a[16],
@@ -12,51 +11,31 @@ module alu_16_bit (
     
   sig s[16];
     
+  alu_arithmetic alu_arithmetic (.a(a),.b(b), .alufn(alufn[3:0]));
+  alu_boolean alu_boolean (.a(a),.b(b), .alufn(alufn[3:0]));
+  alu_compare alu_compare (.a(a),.b(b), .alufn(alufn[3:0]));
+  alu_shift alu_shift (.a(a),.b(b), .alufn(alufn[3:0]));
+  
   always {
-    case (alufn) {
-      // FUNCTIONS SPECIFIED IN LAB 3 PAGE 10
-      6b000000: s = a + b;                  // ADD
-      6b000001: s = a - b;                  // SUB
-      6b011000: s = a & b;                  // AND
-      6b011110: s = a | b;                  // OR
-      6b010110: s = a ^ b;                  // XOR
-      6b011010: s = a;                      // "A"
-      6b100000: s = a << b[5:0];            // SHL
-      6b100001: s = a >> b[5:0];            // SHR
-      6b100011: s = $signed(a) >>> b[5:0];  // SRA
-      6b110011: s = a == b;                 // CMPEQ
-      6b110101: s = a < b;                  // CMPLT
-      6b110111: s = a <= b;                 // CMPLE
-      
-      // ADDITIONAL FUNCTIONS:
-      6b000010: s = (a * b);                // MUL      
-      6b010001: s = ~(a & b);               // NAND
-      6b011111: s = ~(a | b);               // NOR
-      6b010111: s = ~(a ^ b);               // XNOR
-      
-      // MODULO
-      6b000111: 
-        if (b != 0) // avoid dividing by zero
-          s = a - ((a/b) * b); 
-        else
-          s = a; 
-     
+    // z, v, n outputs can only be non-zero when carrying out arithmetic operations (ADD, SUB, MUL)
+    z = 0;
+    v = 0;
+    n = 0;
+    
+    case (alufn[5:4]) {
+      2b00: 
+        s = alu_arithmetic.o;
+        z = alu_arithmetic.z;
+        v = alu_arithmetic.v;
+        n = alu_arithmetic.n;
+      2b01:
+        s = alu_boolean.s;
+      2b10:
+        s = alu_shift.s;
+      2b11:
+        s = alu_compare.s;
       default:  s = 0;
       }
-    
-    // z, v, n outputs can only be non-zero when carrying out arithmetic operations (ADD, SUB, MUL)
-    if (alufn[5:4] == 2b00) {
-      z = s == 0;
-      v = ( a[15] & (b[15] ^ alufn[0]) & ~s[15] ) | ( ~a[15] & ~(b[15] ^ alufn[0]) & s[15] );
-      n = s[15] == 0;
-      }
-    else {
-      z = 0;
-      v = 0;
-      n = 0;
-      }
-    
     o = s;
-    
   }
 }
