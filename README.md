@@ -10,7 +10,9 @@ __automated ALU tester__ - for automatically running the test cases for each ALU
 __ALU statement tester__ - displays the input A, B, opcode and ALU output values in sequence, terminates at error state and displays 'E' on the seven-segment display if the particular test case does not produce the expected output :  [alu_statement_tester.luc](source\alu_statement_tester.luc) 
 
 __16-Bit ALU__ - Implemented functions :
+	
 	ADD, SUB, AND, OR, XOR, "A", SHL, SHR, SRA, CMPEQ, CMPLT, CMPLE
+	
 	Additional functions implemented: MULT, NAND, NOR, XNOR, MODULO
  [alu_16_bit.luc](source\alu_16_bit.luc) 
 
