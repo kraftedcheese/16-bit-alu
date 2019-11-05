@@ -1,7 +1,7 @@
 # MOJO FPGA 16 - Bit ALU & Automated & Manual Tester 
 #### SUTD - 50.002 Computation Structures 1D Project
 
-__mojo_top__- switches between automated and manual testing modes : [mojo_top.luc](source\mojo_top.luc) 
+__mojo_top__ - switches between automated and manual testing modes : [mojo_top.luc](source\mojo_top.luc) 
 
 __manual ALU tester__ - for testing the ALU manually using the 24 dip switches on the MOJO FPGA IO Shield : [alu_tester.luc](source\alu_tester.luc) 
 
