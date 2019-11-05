@@ -1,4 +1,4 @@
-# MOJO FPGA 16 - Bit ALU & Automated & Manual Tester 
+# MOJO FPGA : 16-Bit ALU & Automated & Manual Tester 
 #### SUTD - 50.002 Computation Structures 1D Project
 
 __mojo_top__ - switches between automated and manual testing modes : [mojo_top.luc](source\mojo_top.luc) 
