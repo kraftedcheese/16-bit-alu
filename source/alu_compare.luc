@@ -7,9 +7,9 @@ module alu_compare (
 
   always {
     case(alufn){
-      6b100000: s = a << b[5:0];            // SHL
-      6b100001: s = a >> b[5:0];            // SHR
-      6b100011: s = $signed(a) >>> b[5:0];  // SRA
+      4b0011: s = a == b;                 // CMPEQ
+      4b0101: s = a < b;                  // CMPLT
+      4b0111: s = a <= b;                 // CMPLE
       default: s = 0;
       }
   }
